@@ -2,23 +2,19 @@ import { useState } from 'react';
 import { Images, Sparkles, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AssetCard } from '@/components/AssetCard';
+import { SceneCard } from '@/components/SceneCard';
 import { PresetCard } from '@/components/PresetCard';
-import { SCENE_ASSETS, GALLERY_ASSETS } from '@/data/assets';
+import { SCENES } from '@/data/scenes';
 import { COMMUNITY_PRESETS } from '@/data/presets';
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const allSceneAssets = Object.values(SCENE_ASSETS);
-  const allGalleryAssets = Object.values(GALLERY_ASSETS);
-  const allAssets = [...allSceneAssets, ...allGalleryAssets];
-
-  const filteredAssets = allAssets.filter(
-    (asset) =>
-      asset.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      asset.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      asset.prompt.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredScenes = SCENES.filter(
+    (scene) =>
+      scene.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      scene.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      scene.prompt.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const filteredPresets = COMMUNITY_PRESETS.filter(
@@ -74,17 +70,17 @@ const Index = () => {
             <div className="text-center">
               <h2 className="text-2xl font-semibold mb-2">场景素材库</h2>
               <p className="text-muted-foreground">
-                精选{filteredAssets.length}个专业场景提示词
+                精选{filteredScenes.length}个专业场景提示词
               </p>
             </div>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {filteredAssets.map((asset) => (
-                <AssetCard key={asset.id} asset={asset} />
+              {filteredScenes.map((scene) => (
+                <SceneCard key={scene.id} scene={scene} />
               ))}
             </div>
-            {filteredAssets.length === 0 && (
+            {filteredScenes.length === 0 && (
               <div className="text-center py-16">
-                <p className="text-muted-foreground">未找到匹配的素材</p>
+                <p className="text-muted-foreground">未找到匹配的场景</p>
               </div>
             )}
           </TabsContent>

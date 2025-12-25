@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Copy, Check, Heart, Camera, Sun, Palette, Image, Sparkles } from 'lucide-react';
+import { Copy, Check, Eye, Camera, Sun, Palette, Image, Sparkles } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,55 +11,75 @@ import {
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
-import { getPresetAsset, type Preset } from '@/data/presets';
+import { getSceneAsset, type Scene } from '@/data/scenes';
 
-interface PresetCardProps {
-  preset: Preset;
+interface SceneCardProps {
+  scene: Scene;
 }
 
-export function PresetCard({ preset }: PresetCardProps) {
+export function SceneCard({ scene }: SceneCardProps) {
   const [copied, setCopied] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
-  const asset = getPresetAsset(preset);
+  const asset = getSceneAsset(scene);
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(preset.prompt);
+    await navigator.clipboard.writeText(scene.prompt);
     setCopied(true);
     toast.success('提示词已复制到剪贴板');
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const sp = preset.structuredPrompt;
+  const sp = scene.structuredPrompt;
   const hasFields = sp && Object.values(sp).some(v => v);
 
   return (
     <>
-      <Card
-        className="group overflow-hidden border-border/50 bg-card card-hover cursor-pointer"
-        onClick={() => setShowDetail(true)}
-      >
+      <Card className="group overflow-hidden border-border/50 bg-card card-hover cursor-pointer">
         <div className="relative aspect-[4/3] overflow-hidden">
           <img
             src={asset?.previewUrl}
-            alt={preset.title}
+            alt={scene.title}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
             loading="lazy"
           />
-          <div className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-background/80 backdrop-blur-sm px-2 py-1">
-            <Heart className="h-3 w-3 text-primary fill-primary" />
-            <span className="text-xs font-medium">{preset.likes}</span>
-          </div>
           <div className="image-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="secondary"
+                className="flex-1 backdrop-blur-sm bg-background/80"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowDetail(true);
+                }}
+              >
+                <Eye className="h-4 w-4 mr-1" />
+                查看
+              </Button>
+              <Button
+                size="sm"
+                variant="default"
+                className="flex-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCopy();
+                }}
+              >
+                {copied ? <Check className="h-4 w-4 mr-1" /> : <Copy className="h-4 w-4 mr-1" />}
+                复制
+              </Button>
+            </div>
+          </div>
         </div>
         <CardContent className="p-4">
-          <div className="space-y-2">
-            <div className="flex items-start justify-between gap-2">
-              <h3 className="font-medium text-foreground">{preset.title}</h3>
-              <Badge variant="secondary" className="text-xs shrink-0">
-                {preset.category}
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <h3 className="font-medium text-foreground">{scene.title}</h3>
+              <Badge variant="secondary" className="mt-1 text-xs">
+                {scene.category}
               </Badge>
             </div>
-            <p className="text-xs text-muted-foreground">by {preset.author}</p>
           </div>
         </CardContent>
       </Card>
@@ -68,8 +88,8 @@ export function PresetCard({ preset }: PresetCardProps) {
         <DialogContent className="max-w-4xl max-h-[90vh]">
           <DialogHeader>
             <DialogTitle className="text-xl flex items-center gap-3">
-              {preset.title}
-              <Badge variant="outline">{preset.category}</Badge>
+              {scene.title}
+              <Badge variant="outline">{scene.category}</Badge>
             </DialogTitle>
           </DialogHeader>
           <ScrollArea className="max-h-[70vh]">
@@ -77,20 +97,11 @@ export function PresetCard({ preset }: PresetCardProps) {
               <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
                 <img
                   src={asset?.previewUrl}
-                  alt={preset.title}
+                  alt={scene.title}
                   className="h-full w-full object-cover"
                 />
-                <div className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-background/80 backdrop-blur-sm px-3 py-1.5">
-                  <Heart className="h-4 w-4 text-primary fill-primary" />
-                  <span className="text-sm font-medium">{preset.likes}</span>
-                </div>
               </div>
               <div className="space-y-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span>创作者:</span>
-                  <span className="font-medium text-foreground">{preset.author}</span>
-                </div>
-
                 {hasFields && (
                   <div className="space-y-3">
                     {sp.subject && (
@@ -123,7 +134,7 @@ export function PresetCard({ preset }: PresetCardProps) {
 
                 <div className="rounded-lg border border-border bg-card p-4">
                   <p className="text-xs text-muted-foreground mb-2">完整提示词</p>
-                  <p className="text-sm leading-relaxed">{preset.prompt}</p>
+                  <p className="text-sm leading-relaxed">{scene.prompt}</p>
                 </div>
 
                 <Button onClick={handleCopy} className="w-full">
